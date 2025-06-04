@@ -1,0 +1,52 @@
+CREATE DATABASE IF NOT EXISTS `payroll_system`
+  DEFAULT CHARACTER SET = utf8mb4
+  DEFAULT COLLATE = utf8mb4_unicode_ci;
+USE `payroll_system`;
+
+-- 2) Users table for login/registration
+CREATE TABLE IF NOT EXISTS `users` (
+  `user_id` INT AUTO_INCREMENT PRIMARY KEY,
+  `username` VARCHAR(50) NOT NULL UNIQUE,
+  `email` VARCHAR(100) NOT NULL UNIQUE,
+  `password` VARCHAR(255) NOT NULL,
+  `role` ENUM('admin','user') NOT NULL DEFAULT 'admin'
+) ENGINE=InnoDB;
+
+-- 3) Employees table
+CREATE TABLE IF NOT EXISTS `employees` (
+  `emp_id` INT PRIMARY KEY,
+  `username` VARCHAR(50) NOT NULL UNIQUE,
+  `name` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(100) NOT NULL UNIQUE,
+  `phone` VARCHAR(20),
+  `department` VARCHAR(50),
+  `designation` VARCHAR(50),
+  `join_date` DATE,
+  `basic_salary` DECIMAL(10,2) NOT NULL
+) ENGINE=InnoDB;
+
+-- 4) Attendance records
+CREATE TABLE IF NOT EXISTS `attendance` (
+  `attendance_id` INT AUTO_INCREMENT PRIMARY KEY,
+  `emp_id` INT NOT NULL,
+  `date` DATE NOT NULL,
+  `status` ENUM('Present','Absent','Leave') NOT NULL DEFAULT 'Present',
+  FOREIGN KEY (`emp_id`) REFERENCES `employees`(`emp_id`)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 5) Salary records
+CREATE TABLE IF NOT EXISTS `salary` (
+  `salary_id` INT AUTO_INCREMENT PRIMARY KEY,
+  `emp_id` INT NOT NULL,
+  `month` VARCHAR(20) NOT NULL,
+  `year` YEAR NOT NULL,
+  `basic_salary` DECIMAL(10,2) NOT NULL,
+  `allowances` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `deductions` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `net_salary` DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (`emp_id`) REFERENCES `employees`(`emp_id`)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
